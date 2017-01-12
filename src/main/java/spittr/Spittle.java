@@ -43,6 +43,8 @@ public class Spittle {
         return longitude;
     }
 
+    public Double getLatitude() { return latitude; }
+
     @Override
     public boolean equals(Object that) {
         return EqualsBuilder.reflectionEquals(this, that, "id", "time");

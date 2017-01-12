@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.view.InternalResourceView;
 import spittr.Spittle;
-import spittr.data.SpillteRepository;
+import spittr.data.SpittleRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,10 +20,9 @@ import java.util.List;
  * Created by dell on 2017-1-11.
  */
 public class SpittleControllerTest {
-    @Test
     public void shouldShowRecentSpittles() throws Exception {
         List<Spittle> exceptedSpittles = createSpittleList(20);
-        SpillteRepository mockRepository = mock(SpillteRepository.class);
+        SpittleRepository mockRepository = mock(SpittleRepository.class);
         when(mockRepository.findSpittles(Long.MAX_VALUE, 20)).thenReturn(exceptedSpittles);
 
         SpittleController controller = new SpittleController(mockRepository);
@@ -31,7 +30,22 @@ public class SpittleControllerTest {
         mockMvc.perform(get("/spittles"))
                 .andExpect(view().name("spittles"))
                 .andExpect(model().attributeExists("spittleList"))
-                .andExpect(model().attribute("spittleList", hasItem(exceptedSpittles.toArray())));
+                .andExpect(model().attribute("spittleList", is(exceptedSpittles)));
+    }
+
+    @Test
+    public void shouldShowPagedSpittles() throws Exception {
+        List<Spittle> exceptedSpittles = createSpittleList(30);
+        SpittleRepository mockRepository = mock(SpittleRepository.class);
+        when(mockRepository.findSpittles(Long.MAX_VALUE, 30)).thenReturn(exceptedSpittles);
+
+        SpittleController controller = new SpittleController(mockRepository);
+        MockMvc mockMvc = standaloneSetup(controller).setSingleView(new InternalResourceView("/WEB-INF/views/spittles.jsp")).build();
+
+        mockMvc.perform(get("/spittles"))
+                .andExpect(view().name("spittles"))
+                .andExpect(model().attributeExists("spittleList"))
+                .andExpect(model().attribute("spittleList", is(exceptedSpittles)));
     }
 
     private List<Spittle> createSpittleList(int count) {
