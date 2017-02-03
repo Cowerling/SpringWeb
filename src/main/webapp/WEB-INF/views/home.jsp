@@ -1,3 +1,5 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: dell
@@ -5,7 +7,6 @@
   Time: 9:43
   To change this template use File | Settings | File Templates.
 --%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
     <head>
@@ -13,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="<c:url value="/resources/style.css" />">
     </head>
     <body>
-        <h1>Welcome to Spittr</h1>
+        <h1><s:message code="spittr.welcome" /></h1>
 
         <a href="<c:url value="/spittles" />">Spittles</a>
         <a href="<c:url value="/spitter/register" />">Register</a>
