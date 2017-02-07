@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import spittr.Spittle;
 import spittr.data.SpittleRepository;
+import spittr.web.exception.DuplicateSpittleException;
+import spittr.web.exception.SpittleNotFoundException;
 
 import java.util.List;
 
@@ -41,9 +40,24 @@ public class SpittleController {
         return spittleRepository.findSpittles(max, count);
     }
 
+    @RequestMapping(method = RequestMethod.POST)
+    public String saveSpittle(Spittle spittle) throws DuplicateSpittleException {
+        spittleRepository.save(spittle);
+        return "redirect:/spittles/";
+    }
+
     @RequestMapping(value = "/{spittleId}", method = RequestMethod.GET)
-    public String spittle(@PathVariable long spittleId, Model model) {
-        model.addAttribute(spittleRepository.findOne(spittleId));
+    public String spittle(@PathVariable long spittleId, Model model) throws SpittleNotFoundException {
+        Spittle spittle = spittleRepository.findOne(spittleId);
+        if (spittle == null)
+            throw new SpittleNotFoundException();
+
+        model.addAttribute(spittle);
         return "spittle";
+    }
+
+    @ExceptionHandler(DuplicateSpittleException.class)
+    public String handleDuplicateSpittle() {
+        return "error/duplicate";
     }
 }
