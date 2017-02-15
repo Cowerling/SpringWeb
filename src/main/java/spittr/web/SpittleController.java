@@ -6,10 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import spittr.Spittle;
+import spittr.SpittleForm;
 import spittr.data.SpittleRepository;
 import spittr.web.exception.DuplicateSpittleException;
 import spittr.web.exception.SpittleNotFoundException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,8 +43,8 @@ public class SpittleController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String saveSpittle(Spittle spittle) throws DuplicateSpittleException {
-        spittleRepository.save(spittle);
+    public String saveSpittle(SpittleForm form) throws DuplicateSpittleException {
+        spittleRepository.save(new Spittle(form.getId(), form.getMessage(), new Date(), form.getLongitude(), form.getLatitude()));
         return "redirect:/spittles/";
     }
 
@@ -56,8 +58,8 @@ public class SpittleController {
         return "spittle";
     }
 
-    @ExceptionHandler(DuplicateSpittleException.class)
+    /*@ExceptionHandler(DuplicateSpittleException.class)
     public String handleDuplicateSpittle() {
         return "error/duplicate";
-    }
+    }*/
 }

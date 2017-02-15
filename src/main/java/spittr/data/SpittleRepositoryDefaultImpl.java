@@ -30,10 +30,9 @@ public class SpittleRepositoryDefaultImpl implements SpittleRepository {
     }
 
     public void save(Spittle spittle) throws DuplicateSpittleException {
-        try {
-            spittleMap.put(spittle.getId(), spittle);
-        } catch (Exception exception) {
+        if (spittleMap.containsKey(spittle.getId()))
             throw new DuplicateSpittleException();
-        }
+
+        spittleMap.put(spittle.getId(), spittle);
     }
 }
