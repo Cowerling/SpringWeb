@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import spittr.Spitter;
 import spittr.data.SpitterRepository;
+import spittr.web.exception.DuplicateSpittleException;
 
 import javax.servlet.http.Part;
 import javax.validation.Valid;
@@ -38,7 +40,7 @@ public class SpitterController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String processRegistration(@RequestPart("profilePicture") Part profilePicture, @Valid Spitter spitter, Errors errors) throws IOException {
+    public String processRegistration(@RequestPart("profilePicture") Part profilePicture, @Valid Spitter spitter, RedirectAttributes model, Errors errors) throws IOException {
         if (errors.hasErrors()) {
             return "registerForm";
         }
@@ -46,13 +48,18 @@ public class SpitterController {
         spitterRepository.save(spitter);
         profilePicture.write("/data/spittr/" + profilePicture.getSubmittedFileName());
 
-        return "redirect:/spitter/" + spitter.getUsername();
+        model.addAttribute("username", spitter.getUsername());
+        model.addAttribute("spitterId", spitter.getId());
+        model.addFlashAttribute(spitter);
+
+        return "redirect:/spitter/{username}";
     }
 
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public String showSpitterProfile(@PathVariable String username, Model model) {
-        Spitter spitter = spitterRepository.findByUsername(username);
-        model.addAttribute(spitter);
+        if (!model.containsAttribute("spitter")) {
+            model.addAttribute(spitterRepository.findByUsername(username));
+        }
         return "profile";
     }
 }
