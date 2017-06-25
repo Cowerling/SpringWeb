@@ -2,6 +2,8 @@ package spittr.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -28,6 +31,7 @@ import java.util.Properties;
  */
 @Configuration
 @EnableTransactionManagement
+@MapperScan("spittr.data.mapper")
 public class DataSourceConfig {
     @Value("${jndi.name}")
     private String jndiName;
@@ -107,7 +111,7 @@ public class DataSourceConfig {
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) { return new NamedParameterJdbcTemplate(dataSource); }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactoryBean(DataSource dataSource) {
+    public LocalSessionFactoryBean hibernateSessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
         sessionFactoryBean.setPackagesToScan(new String[] { "spittr" });
@@ -118,12 +122,25 @@ public class DataSourceConfig {
     }
 
     @Bean
+    public SqlSessionFactoryBean mybatisSessionFactory(DataSource dataSource) {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource);
+        sqlSessionFactoryBean.setTypeAliasesPackage("spittr");
+        return sqlSessionFactoryBean;
+    }
+
+    @Bean
     public BeanPostProcessor persistenceTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
+    public PlatformTransactionManager hibernateTransactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
+    }
+
+    @Bean
+    public DataSourceTransactionManager myBatisTransactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

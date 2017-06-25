@@ -16,7 +16,6 @@ import java.util.List;
  * Created by dell on 2017-3-29.
  */
 @Repository
-@Qualifier("default")
 public class HibernateSpitterRepository implements SpitterRepository {
     @Autowired
     private SessionFactory sessionFactory;

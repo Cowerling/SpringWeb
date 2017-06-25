@@ -21,7 +21,7 @@ public class SpitterControllerTest {
         SpitterController controller = new SpitterController(mockRepository);
         MockMvc mockMvc = standaloneSetup(controller).build();
 
-        mockMvc.perform(get("/spitter/register"))
+        mockMvc.perform(get("/spittr/register"))
                 .andExpect(view().name("registerForm"));
     }
 
@@ -36,12 +36,12 @@ public class SpitterControllerTest {
         SpitterController controller = new SpitterController(mockRepository);
         MockMvc mockMvc = standaloneSetup(controller).build();
 
-        mockMvc.perform(post("/spitter/register")
+        mockMvc.perform(post("/spittr/register")
         .param("firstName", "Jack")
         .param("lastName", "Bauer")
         .param("username", "jbauer")
         .param("password","24hours"))
-                .andExpect(redirectedUrl("/spitter/jbauer"));
+                .andExpect(redirectedUrl("/spittr/jbauer"));
         verify(mockRepository, atLeastOnce()).save(unsaved);
     }
 }

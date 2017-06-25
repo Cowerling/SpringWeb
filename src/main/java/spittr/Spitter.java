@@ -2,6 +2,7 @@ package spittr;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.ibatis.type.Alias;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Email;
 
@@ -13,7 +14,8 @@ import javax.validation.constraints.Size;
  * Created by dell on 2017-2-2.
  */
 @Entity
-@Table(name = "spitter")
+@Table(name = "spittr")
+@Alias("spitter")
 public class Spitter {
     private Long id;
 

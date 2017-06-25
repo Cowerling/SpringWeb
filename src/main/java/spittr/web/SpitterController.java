@@ -9,22 +9,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import spittr.Spitter;
 import spittr.data.SpitterRepository;
-import spittr.web.exception.DuplicateSpittleException;
 
 import javax.servlet.http.Part;
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 
 /**
  * Created by dell on 2017-1-13.
  */
 @Controller
-@RequestMapping("/spitter")
+@RequestMapping("/spittr")
 public class SpitterController {
     private SpitterRepository spitterRepository;
 
@@ -57,7 +54,7 @@ public class SpitterController {
 
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
     public String showSpitterProfile(@PathVariable String username, Model model) {
-        if (!model.containsAttribute("spitter")) {
+        if (!model.containsAttribute("spittr")) {
             model.addAttribute(spitterRepository.findByUsername(username));
         }
         return "profile";
