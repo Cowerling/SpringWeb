@@ -2,14 +2,18 @@ package spittr;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Email;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  * Created by dell on 2017-2-2.
  */
+@Entity
+@Table(name = "spitter")
 public class Spitter {
     private Long id;
 
@@ -33,6 +37,8 @@ public class Spitter {
     @Email(message = "{email.valid}")
     private String email;
 
+    private boolean updateByEmail;
+
     public Spitter() {}
 
     public Spitter(String username, String password, String firstName, String lastName, String email) {
@@ -48,14 +54,22 @@ public class Spitter {
     }
 
     public Spitter(Long id, String username, String password, String firstName, String lastName, String email) {
+        this(id, username, password, firstName, lastName, null, false);
+    }
+
+    public Spitter(Long id, String username, String password, String firstName, String lastName, String email, boolean updateByEmail) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.updateByEmail = updateByEmail;
     }
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     public Long getId() {
         return id;
     }
@@ -64,6 +78,7 @@ public class Spitter {
         this.id = id;
     }
 
+    @Column(name = "username")
     public String getUsername() {
         return username;
     }
@@ -72,6 +87,7 @@ public class Spitter {
         this.username = username;
     }
 
+    @Column(name = "password")
     public String getPassword() {
         return password;
     }
@@ -80,6 +96,7 @@ public class Spitter {
         this.password = password;
     }
 
+    @Column(name = "first_name")
     public String getFirstName() {
         return firstName;
     }
@@ -88,6 +105,7 @@ public class Spitter {
         this.firstName = firstName;
     }
 
+    @Column(name = "last_name")
     public String getLastName() {
         return lastName;
     }
@@ -96,12 +114,18 @@ public class Spitter {
         this.lastName = lastName;
     }
 
+    @Column(name = "email")
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Transient
+    public boolean isUpdateByEmail() {
+        return updateByEmail;
     }
 
     @Override

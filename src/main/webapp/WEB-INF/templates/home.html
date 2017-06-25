@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
     <head>
         <meta charset="UTF-8">
         <title>Spittr</title>
         <link rel="stylesheet" type="text/css" th:href="@{/resources/style.css}">
+        <script type="text/javascript" th:src="@{/resources/js/jquery-3.1.1.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/js/page.js}"></script>
     </head>
     <body>
+        <div sec:authorize="isAuthenticated()">
+            Hello <span sec:authentication="name">someone</span>
+            <span sec:authorize-url="/spitter/admin">
+                <br /><a th:href="@{/spitter/admin}">Administration</a>
+            </span>
+        </div>
+
         <div id="header" th:include="page :: header"></div>
 
         <div id="content">

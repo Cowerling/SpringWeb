@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
  * Created by cowerling on 17-1-12.
  */
 @Component
-@Qualifier("default")
 public class SpittleRepositoryDefaultImpl implements SpittleRepository {
     private Map<Long, Spittle> spittleMap = new HashMap<Long, Spittle>();
 

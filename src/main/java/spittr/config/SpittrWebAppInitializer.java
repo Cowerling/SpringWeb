@@ -1,5 +1,7 @@
 package spittr.config;
 
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.MultipartConfigElement;
@@ -10,6 +12,7 @@ import javax.servlet.ServletRegistration;
  */
 public class SpittrWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     private static final int MEGA_BYTE_SIZE = 1024 * 1024;
+    private static final String ACTIVE_PROFILES  = "development";
 
     @Override
     protected String[] getServletMappings() {
@@ -29,5 +32,13 @@ public class SpittrWebAppInitializer extends AbstractAnnotationConfigDispatcherS
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         registration.setMultipartConfig(new MultipartConfigElement("E:\\Temp\\spittr\\uploads", 2 * MEGA_BYTE_SIZE, 4 * MEGA_BYTE_SIZE, 0));
+    }
+
+    @Override
+    protected WebApplicationContext createRootApplicationContext() {
+        WebApplicationContext context = super.createRootApplicationContext();
+        ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getEnvironment();
+        environment.setActiveProfiles(ACTIVE_PROFILES);
+        return context;
     }
 }

@@ -58,3 +58,7 @@ label.error {
 input.error {
 	background-color: #ffcccc;
 }
+
+.hidden {
+	display: none;
+}

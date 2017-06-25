@@ -6,6 +6,11 @@
     <body>
         <div th:fragment="header">
             <a th:href="@{/}"><img th:src="@{/resources/images/spitter_logo_50.png}" border="0" /></a>
+            <a class="login" th:href="@{/login}">Login</a>
+            <a class="logout" th:href="@{/logout}">Logout</a>
+            <form class="logout hidden" th:action="@{/logout}" method="post">
+                <input type="submit" name="logout" value="Logout" />
+            </form>
         </div>
 
         <div>Content goes here</div>
