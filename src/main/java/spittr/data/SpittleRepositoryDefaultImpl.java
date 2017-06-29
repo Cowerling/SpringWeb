@@ -28,10 +28,12 @@ public class SpittleRepositoryDefaultImpl implements SpittleRepository {
         return spittleMap.get(spittleId);
     }
 
-    public void save(Spittle spittle) throws DuplicateSpittleException {
+    public Spittle save(Spittle spittle) throws DuplicateSpittleException {
         if (spittleMap.containsKey(spittle.getId()))
             throw new DuplicateSpittleException();
 
-        spittleMap.put(spittle.getId(), spittle);
+        return spittleMap.put(spittle.getId(), spittle);
     }
+
+    public void remove(long spittleId) {}
 }

@@ -2,7 +2,6 @@ package spittr.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -20,7 +19,6 @@ import java.util.Map;
  * Created by dell on 2017-3-24.
  */
 @Repository
-@Qualifier("default")
 public class JdbcSpittleRepository implements SpittleRepository {
     @Autowired
     private JdbcOperations jdbcOperations;
@@ -51,10 +49,14 @@ public class JdbcSpittleRepository implements SpittleRepository {
         }, spittleId);
     }
 
-    public void save(Spittle spittle) throws DuplicateSpittleException {
+    public Spittle save(Spittle spittle) throws DuplicateSpittleException {
         jdbcOperations.update(INSERT_SPITTLE,
                 spittle.getId(),
                 spittle.getMessage(),
                 spittle.getTime());
+
+        return spittle;
     }
+
+    public void remove(long spittleId) {}
 }

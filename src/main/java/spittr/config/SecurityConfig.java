@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .rememberMe().tokenValiditySeconds(60 * 60 * 28).key("spitterKey")
             .and()
             .authorizeRequests()
-            .antMatchers("/spittr/admin").access("isAuthenticated() and hasRole('SPITTER') and principal.username == 'admin'")
+            .antMatchers("/spittr/cowerling").access("isAuthenticated() and hasRole('SPITTER') and principal.username == 'cowerling'")
             .antMatchers(HttpMethod.POST,"/spittles").hasRole("SPITTER")
             .anyRequest().permitAll()
             .and()

@@ -14,7 +14,7 @@
         <div sec:authorize="isAuthenticated()">
             Hello <span sec:authentication="name">someone</span>
             <span sec:authorize-url="/spittr/admin">
-                <br /><a th:href="@{/spitter/admin}">Administration</a>
+                <br /><a th:href="@{/spittr/admin}">Administration</a>
             </span>
         </div>
 
@@ -24,7 +24,7 @@
             <h1>Welcome to Spittr</h1>
 
             <a th:href="@{/spittles}">Spittles</a>|
-            <a th:href="@{/spitter/register}">Register</a>
+            <a th:href="@{/spittr/register}">Register</a>
         </div>
 
         <div id="footer" th:include="page :: copy"></div>

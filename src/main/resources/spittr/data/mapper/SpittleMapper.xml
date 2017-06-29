@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="spittr.data.mapper.SpittleMapper">
+    <resultMap id="spittleResult" type="spittle">
+        <id property="id" column="id" />
+        <result property="message" column="message" />
+        <result property="time" column="postedTime" javaType="date" jdbcType="TIMESTAMP" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+    </resultMap>
+</mapper>
