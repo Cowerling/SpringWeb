@@ -19,8 +19,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import spittr.service.SpitterService;
 
 
 import javax.sql.DataSource;
@@ -142,5 +144,13 @@ public class DataSourceConfig {
     @Bean
     public DataSourceTransactionManager myBatisTransactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean
+    public HttpInvokerProxyFactoryBean spitterService() {
+        HttpInvokerProxyFactoryBean httpInvokerProxyFactoryBean = new HttpInvokerProxyFactoryBean();
+        httpInvokerProxyFactoryBean.setServiceUrl("http://localhost:8080/Spittr/spitter.service");
+        httpInvokerProxyFactoryBean.setServiceInterface(SpitterService.class);
+        return httpInvokerProxyFactoryBean;
     }
 }
