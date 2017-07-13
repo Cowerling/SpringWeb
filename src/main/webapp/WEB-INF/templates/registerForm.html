@@ -8,7 +8,7 @@
         <script type="text/javascript" th:src="@{/resources/js/page.js}"></script>
     </head>
     <body>
-        <form method="post" th:object="${spitter}" enctype="multipart/form-data">
+        <form method="post" th:object="${spitter}" enctype="multipart/form-data" th:action="@{/}" >
             <div class="errors" th:if="${#fields.hasErrors('*')}">
                 <ul>
                     <li th:each="err: ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>

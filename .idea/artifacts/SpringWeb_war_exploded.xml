@@ -83,6 +83,10 @@
           <element id="library" level="project" name="Maven: net.sf.ehcache:ehcache:2.10.4" />
           <element id="library" level="project" name="Maven: javax.cache:cache-api:1.0.0" />
           <element id="library" level="project" name="Maven: javax.annotation:jsr250-api:1.0" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.9" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.9" />
+          <element id="library" level="project" name="Maven: org.apache.activemq:activemq-all:5.15.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">
