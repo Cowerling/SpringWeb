@@ -10,6 +10,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.function.DoubleBinaryOperator;
@@ -18,7 +19,9 @@ import java.util.function.DoubleBinaryOperator;
  * Created by dell on 2017-1-10.
  */
 @Alias("spittle")
-public class Spittle {
+public class Spittle implements Serializable {
+    private static final long serialVersionUID = 147L;
+    
     private static Long count = 0L;
 
     private Long id;
