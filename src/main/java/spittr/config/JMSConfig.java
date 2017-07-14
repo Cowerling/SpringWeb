@@ -7,13 +7,19 @@ import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.AbstractMessageListenerContainer;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.MessageListenerContainer;
+import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import spittr.Spittle;
+import spittr.alerts.SpittleAlertHandler;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -23,6 +29,7 @@ import java.util.HashMap;
  * Created by dell on 2017-7-13.
  */
 @Configuration
+@ComponentScan("spittr.alerts")
 public class JMSConfig {
     @Value("${broker.url}")
     private String brokerUrl;
@@ -69,5 +76,19 @@ public class JMSConfig {
         jmsTemplate.setDefaultDestination(destination);
         jmsTemplate.setMessageConverter(messageConverter);
         return jmsTemplate;
+    }
+
+    @Bean
+    public AbstractMessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, @Qualifier("queue") Destination destination, SpittleAlertHandler spittleAlertHandler) {
+        DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(connectionFactory);
+        messageListenerContainer.setDestination(destination);
+
+        MessageListenerAdapter messageListener = new MessageListenerAdapter();
+        messageListener.setDelegate(spittleAlertHandler);
+        messageListener.setDefaultListenerMethod("handleSpittleAlert");
+        messageListenerContainer.setMessageListener(messageListener);
+
+        return messageListenerContainer;
     }
 }

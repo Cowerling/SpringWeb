@@ -3,6 +3,7 @@ package spittr.alerts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import spittr.Spittle;
 import spittr.web.exception.SpittleNotFoundException;
@@ -14,7 +15,7 @@ import javax.jms.Session;
 /**
  * Created by dell on 2017-7-13.
  */
-@Repository
+@Component("alertService")
 public class AlertServiceImpl implements AlertService {
     @Autowired
     private JmsOperations jmsOperations;
