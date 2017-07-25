@@ -1,6 +1,8 @@
 package spittr.web;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,5 +35,11 @@ public class AppWideExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public String accessDeniedHandler() {
         return "error/authentication";
+    }
+
+    @MessageExceptionHandler(Throwable.class)
+    @SendToUser("/queue/errors")
+    public Throwable handleExceptions(Throwable t) {
+        return t;
     }
 }

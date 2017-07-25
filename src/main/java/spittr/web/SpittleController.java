@@ -1,23 +1,35 @@
 package spittr.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import spittr.Notification;
 import spittr.Spittle;
 import spittr.SpittleForm;
 import spittr.data.SpittleRepository;
+import spittr.feed.SpittleFeedService;
+import spittr.mail.SpitterEmailService;
 import spittr.web.error.Error;
 import spittr.web.exception.DuplicateSpittleException;
 import spittr.web.exception.SpittleNotFoundException;
 import spittr.web.exception.SpittleNotFoundRuntimeException;
 
+import javax.management.MBeanServerConnection;
+import java.io.IOException;
 import java.net.URI;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,14 +38,24 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/spittles")
+@ManagedResource(objectName = "spittr:name=SpittleController")
 public class SpittleController {
     private static final String MAX_LONG_AS_STRING = Long.MAX_VALUE + "";
+    private static final int DEFAULT_SPITTLES_PER_PAGE = 25;
+    private int spittlesPerPage = DEFAULT_SPITTLES_PER_PAGE;
 
     private SpittleRepository spittleRepository;
+    private SpittleFeedService spittleFeedService;
+    private SpitterEmailService spitterEmailService;
 
     @Autowired
-    public SpittleController(@Qualifier("default") SpittleRepository spittleRepository) {
+    private MBeanServerConnection mbeanServerConnection;
+
+    @Autowired
+    public SpittleController(@Qualifier("default") SpittleRepository spittleRepository, SpittleFeedService spittleFeedService, SpitterEmailService spitterEmailService) {
         this.spittleRepository = spittleRepository;
+        this.spittleFeedService = spittleFeedService;
+        this.spitterEmailService = spitterEmailService;
     }
 
     /*public SpittleController(SpittleRepository spittleRepository) {
@@ -56,8 +78,16 @@ public class SpittleController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String saveSpittle(SpittleForm form) throws DuplicateSpittleException {
-        spittleRepository.save(new Spittle(form.getId(), form.getMessage(), new Date(), form.getLongitude(), form.getLatitude()));
+        Spittle spittle = spittleRepository.save(new Spittle(form.getId(), form.getMessage(), new Date(), form.getLongitude(), form.getLatitude()));
+        spittleFeedService.broadcastSpittle(spittle);
+        spitterEmailService.sendSimpleSpittleEmail("surpermama@126.com", spittle);
         return "redirect:/spittles/";
+    }
+
+    @MessageMapping("/spittle")
+    @SendToUser("/queue/notifications")
+    public Notification handleSpittle(Principal principal, SpittleForm form) throws DuplicateSpittleException {
+        return new Notification("Saved Spittle");
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
@@ -76,6 +106,7 @@ public class SpittleController {
             throw new SpittleNotFoundException();
 
         model.addAttribute(spittle);
+
         return "spittle";
     }
 
@@ -109,4 +140,19 @@ public class SpittleController {
     public String handleDuplicateSpittle() {
         return "error/duplicate";
     }*/
+
+    @ManagedAttribute
+    public int getSpittlesPerPage() {
+        return spittlesPerPage;
+    }
+
+    @ManagedAttribute
+    public void setSpittlesPerPage(int spittlesPerPage) {
+        this.spittlesPerPage = spittlesPerPage;
+    }
+
+    @RequestMapping("/jmx")
+    public @ResponseBody Object jmx() throws IOException {
+        return mbeanServerConnection.getMBeanCount();
+    }
 }

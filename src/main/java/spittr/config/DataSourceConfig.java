@@ -4,6 +4,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import spittr.service.SpitterService;
 
 
+import javax.mail.Session;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -37,6 +39,9 @@ import java.util.Properties;
 public class DataSourceConfig {
     @Value("${jndi.name}")
     private String jndiName;
+
+    @Value("${jndi.mail.name}")
+    private String jndiMailName;
 
     @Value("${database.driver}")
     private String driver;
@@ -67,6 +72,16 @@ public class DataSourceConfig {
         jndiObjectFactoryBean.setResourceRef(true);
         jndiObjectFactoryBean.setProxyInterface(javax.sql.DataSource.class);
         return  jndiObjectFactoryBean;
+    }
+
+    @Profile("production")
+    @Bean
+    public Session mailSession() {
+        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+        jndiObjectFactoryBean.setJndiName(jndiMailName);
+        jndiObjectFactoryBean.setProxyInterface(javax.mail.Session.class);
+        jndiObjectFactoryBean.setResourceRef(true);
+        return (Session) jndiObjectFactoryBean.getObject();
     }
 
     @Profile("qa")

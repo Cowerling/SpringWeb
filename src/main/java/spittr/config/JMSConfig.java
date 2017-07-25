@@ -10,29 +10,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.AbstractMessageListenerContainer;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.MessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.springframework.jms.remoting.JmsInvokerProxyFactoryBean;
+import org.springframework.jms.remoting.JmsInvokerServiceExporter;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import spittr.Spittle;
+import spittr.alerts.AlertService;
 import spittr.alerts.SpittleAlertHandler;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.Queue;
 import java.util.HashMap;
 
 /**
  * Created by dell on 2017-7-13.
  */
 @Configuration
+@EnableJms
 @ComponentScan("spittr.alerts")
 public class JMSConfig {
     @Value("${broker.url}")
     private String brokerUrl;
+
+    public static final String DESTINATION_QUEUE  = "spitter.queue";
 
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
@@ -44,7 +53,7 @@ public class JMSConfig {
     @Bean
     @Qualifier("queue")
     public ActiveMQQueue queue() {
-        return new ActiveMQQueue("spitter.queue");
+        return new ActiveMQQueue(DESTINATION_QUEUE);
     }
 
     @Bean
@@ -78,11 +87,12 @@ public class JMSConfig {
         return jmsTemplate;
     }
 
-    @Bean
-    public AbstractMessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, @Qualifier("queue") Destination destination, SpittleAlertHandler spittleAlertHandler) {
+    /*@Bean
+    public AbstractMessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, @Qualifier("queue") Destination destination, MessageConverter messageConverter, SpittleAlertHandler spittleAlertHandler) {
         DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(connectionFactory);
         messageListenerContainer.setDestination(destination);
+        messageListenerContainer.setMessageConverter(messageConverter);
 
         MessageListenerAdapter messageListener = new MessageListenerAdapter();
         messageListener.setDelegate(spittleAlertHandler);
@@ -90,5 +100,31 @@ public class JMSConfig {
         messageListenerContainer.setMessageListener(messageListener);
 
         return messageListenerContainer;
+    }*/
+
+    @Bean
+    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+        DefaultJmsListenerContainerFactory listenerContainerFactory = new DefaultJmsListenerContainerFactory();
+        listenerContainerFactory.setConnectionFactory(connectionFactory);
+        listenerContainerFactory.setConcurrency("2-4");
+        listenerContainerFactory.setMessageConverter(messageConverter);
+        return listenerContainerFactory;
+    }
+
+    /*@Bean
+    public JmsInvokerServiceExporter alertServiceExporter(@Qualifier("mail")AlertService alertService) {
+        JmsInvokerServiceExporter jmsInvokerServiceExporter = new JmsInvokerServiceExporter();
+        jmsInvokerServiceExporter.setService(alertService);
+        jmsInvokerServiceExporter.setServiceInterface(AlertService.class);
+        return jmsInvokerServiceExporter;
+    }*/
+
+    @Bean
+    public JmsInvokerProxyFactoryBean remoteAlertService(ConnectionFactory connectionFactory, Queue queue) {
+        JmsInvokerProxyFactoryBean jmsInvokerProxyFactoryBean = new JmsInvokerProxyFactoryBean();
+        jmsInvokerProxyFactoryBean.setConnectionFactory(connectionFactory);
+        jmsInvokerProxyFactoryBean.setQueue(queue);
+        jmsInvokerProxyFactoryBean.setServiceInterface(AlertService.class);
+        return jmsInvokerProxyFactoryBean;
     }
 }

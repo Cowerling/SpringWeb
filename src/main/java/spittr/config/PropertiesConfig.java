@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
  * Created by dell on 2017-3-23.
  */
 @Configuration
-@PropertySource(value = {"classpath:datasource.properties", "classpath:jms.properties"})
+@PropertySource(value = {"classpath:datasource.properties", "classpath:jms.properties", "classpath:amqp.properties", "classpath:mail.properties"})
 public class PropertiesConfig {
     /*@Bean
     public static PropertyPlaceholderConfigurer propertyConfigurer() {

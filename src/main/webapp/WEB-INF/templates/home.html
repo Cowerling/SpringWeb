@@ -8,7 +8,10 @@
         <title>Spittr</title>
         <link rel="stylesheet" type="text/css" th:href="@{/resources/style.css}">
         <script type="text/javascript" th:src="@{/resources/js/jquery-3.1.1.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/js/sockjs-1.1.4.min.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/js/stomp.min.js}"></script>
         <script type="text/javascript" th:src="@{/resources/js/page.js}"></script>
+        <script type="text/javascript" th:src="@{/resources/js/home.js}"></script>
     </head>
     <body>
         <div sec:authorize="isAuthenticated()">
@@ -25,6 +28,8 @@
 
             <a th:href="@{/spittles}">Spittles</a>|
             <a th:href="@{/spittr/register}">Register</a>
+
+            <ul sec:authorize="isAuthenticated()" class="spittleList" />
         </div>
 
         <div id="footer" th:include="page :: copy"></div>

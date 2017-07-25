@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.view.InternalResourceView;
 import spittr.Spittle;
 import spittr.data.SpittleRepository;
+import spittr.feed.SpittleFeedService;
+import spittr.mail.SpitterEmailService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,9 +26,11 @@ public class SpittleControllerTest {
     public void shouldShowRecentSpittles() throws Exception {
         List<Spittle> exceptedSpittles = createSpittleList(20);
         SpittleRepository mockRepository = mock(SpittleRepository.class);
+        SpittleFeedService mockFeedService = mock(SpittleFeedService.class);
+        SpitterEmailService mockEmailService = mock(SpitterEmailService.class);
         when(mockRepository.findSpittles(Long.MAX_VALUE, 20)).thenReturn(exceptedSpittles);
 
-        SpittleController controller = new SpittleController(mockRepository);
+        SpittleController controller = new SpittleController(mockRepository, mockFeedService, mockEmailService);
         MockMvc mockMvc = standaloneSetup(controller).setSingleView(new InternalResourceView("/WEB-INF/views/spittles.jsp")).build();
         mockMvc.perform(get("/spittles"))
                 .andExpect(view().name("spittles"))
@@ -38,9 +42,11 @@ public class SpittleControllerTest {
     public void shouldShowPagedSpittles() throws Exception {
         List<Spittle> exceptedSpittles = createSpittleList(50);
         SpittleRepository mockRepository = mock(SpittleRepository.class);
+        SpittleFeedService mockFeedService = mock(SpittleFeedService.class);
+        SpitterEmailService mockEmailService = mock(SpitterEmailService.class);
         when(mockRepository.findSpittles(238900, 50)).thenReturn(exceptedSpittles);
 
-        SpittleController controller = new SpittleController(mockRepository);
+        SpittleController controller = new SpittleController(mockRepository, mockFeedService, mockEmailService);
         MockMvc mockMvc = standaloneSetup(controller).setSingleView(new InternalResourceView("/WEB-INF/views/spittles.jsp")).build();
 
         mockMvc.perform(get("/spittles?max=238900&count=50"))
@@ -53,9 +59,11 @@ public class SpittleControllerTest {
     public void testSpittle() throws Exception {
         Spittle expectedSpittle = new Spittle("Hello", new Date());
         SpittleRepository mockRepository = mock(SpittleRepository.class);
+        SpittleFeedService mockFeedService = mock(SpittleFeedService.class);
+        SpitterEmailService mockEmailService = mock(SpitterEmailService.class);
         when(mockRepository.findOne(12345)).thenReturn(expectedSpittle);
 
-        SpittleController controller = new SpittleController(mockRepository);
+        SpittleController controller = new SpittleController(mockRepository, mockFeedService, mockEmailService);
         MockMvc mockMvc = standaloneSetup(controller).build();
 
         mockMvc.perform(get("/spittles/12345"))

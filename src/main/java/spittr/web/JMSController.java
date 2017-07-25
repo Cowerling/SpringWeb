@@ -1,6 +1,7 @@
 package spittr.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,10 @@ public class JMSController {
     @Autowired
     private AlertService alertService;
 
+    /*@Autowired
+    @Qualifier("remote")
+    private AlertService mailAlertService;*/
+
     @RequestMapping(value = "/send", method = RequestMethod.GET)
     public Spittle send() {
         Spittle spittle = new Spittle(61616L, "JmsTemplate", new Date(), 0d, 0d);
@@ -30,4 +35,11 @@ public class JMSController {
     public Spittle retrieve() throws SpittleNotFoundException {
         return alertService.retrieveSpittleAlert();
     }
+
+    /*@RequestMapping("/mail")
+    public Spittle sendMail() {
+        Spittle spittle = new Spittle(61616L, "JmsTemplate", new Date(), 0d, 0d);
+        mailAlertService.sendSpittleAlert(spittle);
+        return spittle;
+    }*/
 }
